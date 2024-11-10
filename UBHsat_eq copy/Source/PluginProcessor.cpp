@@ -10,7 +10,8 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-UBHsat_eqAudioProcessor::UBHsat_eqAudioProcessor()
+ //DEFAULT CONSTRUCTOR
+ UBHsat_eqAudioProcessor::UBHsat_eqAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -276,8 +277,6 @@ void UBHsat_eqAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     leftDrive.functionToUse = waveshape;
     rightDrive.functionToUse = waveshape;
     
-    
-    
     juce::dsp::AudioBlock<float> block(buffer);
     
     auto leftBlock = block.getSingleChannelBlock(0);
@@ -307,6 +306,8 @@ void UBHsat_eqAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    juce::MemoryOutputStream mos(destData, true);
+    apvts.state.writeToStream(mos);
 }
 
 void UBHsat_eqAudioProcessor::setStateInformation (const void* data, int sizeInBytes)

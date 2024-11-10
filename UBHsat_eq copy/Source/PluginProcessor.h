@@ -19,12 +19,30 @@ struct ChainSettings
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
+using Filter = juce::dsp::IIR::Filter<float>;
+
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+using WaveShaper = juce::dsp::WaveShaper<float>;
+
+using MonoChain = juce::dsp::ProcessorChain<CutFilter,WaveShaper, CutFilter>;
+
+enum ChainPositions{
+    HP,
+    drive,
+    LP//,
+    //Mix
+};
+
+
 //==============================================================================
 /**
 */
 class UBHsat_eqAudioProcessor  : public juce::AudioProcessor
 {
 public:
+    
+    
     
     //==============================================================================
     UBHsat_eqAudioProcessor();
@@ -70,16 +88,8 @@ public:
 private:
     
     static float currentDrive;
-    
+
     static float waveshape(float sample);
-    
-    using Filter = juce::dsp::IIR::Filter<float>;
-    
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    
-    using WaveShaper = juce::dsp::WaveShaper<float>;
-    
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter,WaveShaper, CutFilter>;
     
     MonoChain leftChain, rightChain;
     
@@ -87,14 +97,7 @@ private:
             // Arctan distortion
             constexpr float pi = juce::MathConstants<float>::pi;
             return (2.0f / pi) * std::atan(sample * (1.0f + drive));
-        }
-    
-    enum ChainPositions{
-        HP,
-        drive,
-        LP//,
-        //Mix
-    };
+    }
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UBHsat_eqAudioProcessor)
 };
